@@ -14,12 +14,10 @@ export default function Home() {
   useEffect(() => {
     if (session) {
       router.push("/dashboard");
+    } else {
+      router.push("/dashboard");
     }
   }, [session, router]);
-
-  if (!session) {
-    router.push("/dashboard");
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-white">
