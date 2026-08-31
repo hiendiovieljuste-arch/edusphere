@@ -1,0 +1,18 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="0.5" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="96" y1="96" x2="416" y2="416" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EFF6FF" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.06"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <path d="M358 140C381.8 140 401 159.2 401 183V329C401 352.8 381.8 372 358 372H154C130.2 372 111 352.8 111 329V183C111 159.2 130.2 140 154 140H358ZM322 182H190V232H278V280H190V330H322V282H234V234H322V182Z" fill="white"/>
+  <path d="M96 96H416C438.1 96 456 113.9 456 136V216C456 238.1 438.1 256 416 256H322.5C305.6 256 292 242.4 292 225.5V204.5C292 187.6 305.6 174 322.5 174H360V152H152V174H189.5C206.4 174 220 187.6 220 204.5V225.5C220 242.4 206.4 256 189.5 256H96C73.9 256 56 238.1 56 216V136C56 113.9 73.9 96 96 96Z" fill="url(#glass)"/>
+  <circle cx="384" cy="126" r="28" fill="#F8FAFC" fill-opacity="0.9"/>
+  <path d="M125 372C125 350.5 142.5 333 164 333H349C370.5 333 388 350.5 388 372V383C388 404.5 370.5 422 349 422H164C142.5 422 125 404.5 125 383V372Z" fill="#0B1220" fill-opacity="0.24"/>
+</svg>

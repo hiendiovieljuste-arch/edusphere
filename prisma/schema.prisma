@@ -1,0 +1,256 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USERS ====================
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  avatar    String?
+  bio       String?
+  role      String   @default("STUDENT")
+  status    String   @default("ACTIVE")
+  institutionId String?
+  programId     String?
+  promotionId   String?
+  classId       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  institution    Institution? @relation("InstitutionUsers", fields: [institutionId], references: [id])
+  program        Program?     @relation("ProgramUsers", fields: [programId], references: [id])
+  promotion      Promotion?   @relation("PromotionUsers", fields: [promotionId], references: [id])
+  classGroup     StudentClass? @relation("ClassUsers", fields: [classId], references: [id])
+  taughtCourses  Course[]     @relation("TeacherCourses")
+  enrollments    Enrollment[]
+  submissions    Submission[]
+  notifications  Notification[]
+  sentMessages   Message[]    @relation("SentMessages")
+  receivedMsgs   Message[]    @relation("ReceiverMessages")
+
+  @@index([institutionId])
+  @@index([programId])
+  @@index([promotionId])
+  @@index([classId])
+}
+
+model Institution {
+  id        String   @id @default(cuid())
+  name      String
+  shortName String?
+  type      String   @default("UNIVERSITY")
+  country   String   @default("FR")
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  programs Program[] @relation("InstitutionPrograms")
+  users    User[]    @relation("InstitutionUsers")
+}
+
+model Program {
+  id            String   @id @default(cuid())
+  institutionId String
+  name          String
+  code          String
+  level         String   @default("UNDERGRADUATE")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  institution Institution @relation("InstitutionPrograms", fields: [institutionId], references: [id], onDelete: Cascade)
+  promotions  Promotion[] @relation("ProgramPromotions")
+  users       User[]      @relation("ProgramUsers")
+
+  @@index([institutionId])
+}
+
+model Promotion {
+  id        String   @id @default(cuid())
+  programId String
+  name      String
+  year      String
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  program Program       @relation("ProgramPromotions", fields: [programId], references: [id], onDelete: Cascade)
+  classes StudentClass[] @relation("PromotionClasses")
+  users   User[]         @relation("PromotionUsers")
+
+  @@index([programId])
+}
+
+model StudentClass {
+  id          String   @id @default(cuid())
+  promotionId String
+  name        String
+  code        String
+  capacity    Int      @default(30)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  promotion Promotion @relation("PromotionClasses", fields: [promotionId], references: [id], onDelete: Cascade)
+  users     User[]    @relation("ClassUsers")
+
+  @@index([promotionId])
+}
+
+// ==================== COURSES ====================
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  slug        String   @unique
+  level       String
+  category    String
+  price       Float    @default(0)
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  status      String   @default("DRAFT")
+  teacherId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  teacher      User              @relation("TeacherCourses", fields: [teacherId], references: [id], onDelete: Cascade)
+  modules      Module[]
+  enrollments  Enrollment[]
+  assignments  Assignment[]
+  reviews      Review[]
+
+  @@index([teacherId])
+}
+
+// ==================== MODULES & LESSONS ====================
+model Module {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  moduleId  String
+  title     String
+  content   String?
+  duration  Int?
+  order     Int
+  type      String   @default("VIDEO")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@index([moduleId])
+}
+
+// ==================== ENROLLMENT ====================
+model Enrollment {
+  id          String   @id @default(cuid())
+  userId      String
+  courseId    String
+  status      String   @default("ACTIVE")
+  progress    Float    @default(0)
+  joinedAt    DateTime @default(now())
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+// ==================== ASSIGNMENTS ====================
+model Assignment {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String
+  dueDate   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@index([courseId])
+}
+
+model Submission {
+  id           String   @id @default(cuid())
+  assignmentId String
+  userId       String
+  content      String?
+  score        Float?
+  status       String   @default("PENDING")
+  submittedAt  DateTime @default(now())
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([assignmentId, userId])
+  @@index([assignmentId])
+  @@index([userId])
+}
+
+// ==================== REVIEWS ====================
+model Review {
+  id        String   @id @default(cuid())
+  courseId  String
+  rating    Int
+  title     String?
+  content   String?
+  createdAt DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+}
+
+// ==================== NOTIFICATIONS ====================
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("INFO")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ==================== MESSAGING ====================
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceiverMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([receiverId])
+}
