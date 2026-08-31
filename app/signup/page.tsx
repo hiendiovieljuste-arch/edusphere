@@ -35,10 +35,11 @@ export default function SignupPage() {
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : null;
 
       if (!response.ok) {
-        throw new Error(data.error || "Impossible de créer le compte.");
+        throw new Error(data?.error || "Impossible de créer le compte.");
       }
 
       const result = await signIn("credentials", {

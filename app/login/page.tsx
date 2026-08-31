@@ -57,8 +57,9 @@ export default function LoginPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch {
-      setError("Une erreur est survenue");
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Une erreur est survenue. Vérifie les identifiants ou la base de données.");
     } finally {
       setLoading(false);
     }
