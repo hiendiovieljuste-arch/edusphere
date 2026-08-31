@@ -17,6 +17,10 @@ export default function Home() {
     }
   }, [session, router]);
 
+  if (!session) {
+    router.push("/dashboard");
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-white">
       <nav className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-gray-200 z-40">

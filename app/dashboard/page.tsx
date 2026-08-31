@@ -16,7 +16,14 @@ export default function DashboardPage() {
   const [data, setData] = useState<Dashboard | null>(null);
 
   useEffect(() => {
-    if (status === "unauthenticated") router.replace("/login");
+    if (status === "unauthenticated") {
+      setData({
+        courses: [],
+        notifications: [],
+        metrics: { courseCount: 0, students: 0, averageProgress: 0, completedCourses: 0 },
+      });
+      return;
+    }
     if (status === "authenticated") {
       fetch("/api/dashboard")
         .then((response) => response.json())
