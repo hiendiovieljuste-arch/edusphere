@@ -10,7 +10,7 @@ cp .env.example .env
 
 Puis modifiez :
 
-- `DATABASE_URL` : base de données SQLite locale ou distante
+- `DATABASE_URL` : base PostgreSQL locale ou distante (Neon, Supabase, Railway, etc.)
 - `NEXTAUTH_SECRET` : clé secrète forte
 - `NEXTAUTH_URL` : URL publique de production
 
@@ -37,8 +37,8 @@ docker run -p 3000:3000 --env-file .env edusphere
 
 ## 5. Déploiement recommandé
 
-- Vercel : compatible Next.js
-- Railway : idéal pour un backend Node + SQLite
+- Vercel + Neon : configuration recommandée pour la production
+- Railway : compatible avec PostgreSQL
 - Render : compatible avec Docker
 - VPS Linux : utiliser le build Next.js avec `npm run start`
 
